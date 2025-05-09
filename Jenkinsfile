@@ -1,36 +1,47 @@
-// Jenkinsfile
 pipeline {
     agent any
-
-    environment {
-        IMAGE_NAME = "python-flask-app"
-        TAG = "latest"
-    }
-
+    
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/oren1984/python-flask-docker.git'
+                script {
+                    // הגדרת הסניף והמאגר
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],  // מצביע על הסניף 'main'
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: 'https://github.com/Oren1984/python-flask-docker.git']]
+                    ])
+                }
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME:$TAG .'
+                script {
+                    // הצע את קוד הדחיפה שלך ל־Docker פה
+                    echo 'Building Docker image...'
+                }
             }
         }
 
         stage('Docker Run') {
             steps {
-                sh 'docker run -d -p 5000:5000 $IMAGE_NAME:$TAG'
+                script {
+                    // הצע את קוד הריצה שלך ב־Docker פה
+                    echo 'Running Docker container...'
+                }
             }
         }
 
         stage('Docker Push') {
             steps {
-                sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
-                sh 'docker tag $IMAGE_NAME:$TAG $DOCKER_USERNAME/$IMAGE_NAME:$TAG'
-                sh 'docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG'
+                script {
+                    // הצע את קוד הדחיפה שלך ל־Docker Hub פה
+                    echo 'Pushing Docker image...'
+                }
             }
         }
     }
